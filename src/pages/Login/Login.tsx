@@ -7,6 +7,7 @@ import {
 } from "@mui/material";
 import React from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
+import style from "./login.module.css";
 
 type Inputs = {
   email: string;
@@ -26,8 +27,8 @@ const Login = () => {
   const onSubmit: SubmitHandler<Inputs> = data => console.log(data);
 
   return (
-    <div className="container">
-      <div className="title">Log in</div>
+    <div className={style.container}>
+      <div className={style.title}>Log in</div>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Container component="main">
           <TextField
