@@ -1,11 +1,14 @@
 import React from "react";
-import Login from "./pages/Login/Login";
-import Users from "./pages/Users/Users";
+import { BrowserRouter } from "react-router-dom";
+import { Routes } from "./components/Routes";
+
 function App() {
   return (
-    <div>
-      <Users />
-    </div>
+    <BrowserRouter>
+      <div className="App">
+        <Routes />
+      </div>
+    </BrowserRouter>
   );
 }
 
