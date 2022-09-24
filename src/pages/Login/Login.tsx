@@ -10,11 +10,9 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import style from "./login.module.css";
 
 type Inputs = {
-  email: string;
+  username: string;
   password: string;
 };
-
-const emailPattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
 const Login = () => {
   const {
@@ -24,7 +22,9 @@ const Login = () => {
     formState: { errors },
   } = useForm<Inputs>();
 
-  const onSubmit: SubmitHandler<Inputs> = data => console.log(data);
+  const onSubmit: SubmitHandler<Inputs> = data => {
+    console.log(data);
+  };
 
   return (
     <div className={style.container}>
@@ -33,18 +33,17 @@ const Login = () => {
         <Container component="main">
           <TextField
             defaultValue=""
-            {...register("email", {
+            {...register("username", {
               required: true,
-              maxLength: 320,
-              pattern: emailPattern,
+              maxLength: 20,
             })}
             margin="normal"
             required
             fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
-            autoComplete="email"
+            id="username"
+            label="Username"
+            name="username"
+            autoComplete="username"
             autoFocus
           />
           <TextField
