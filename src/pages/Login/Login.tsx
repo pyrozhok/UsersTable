@@ -14,6 +14,8 @@ type Inputs = {
   password: string;
 };
 
+const API_URL = "http://emphasoft-test-assignment.herokuapp.com";
+
 const Login = () => {
   const {
     register,
@@ -24,6 +26,17 @@ const Login = () => {
 
   const onSubmit: SubmitHandler<Inputs> = data => {
     console.log(data);
+
+    const options = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: `{"username":"${data.username}","password":"${data.password}"}`,
+    };
+
+    fetch(`${API_URL}/api-token-auth/`, options)
+      .then(response => response.json())
+      .then(response => console.log(response))
+      .catch(err => console.error(err));
   };
 
   return (
