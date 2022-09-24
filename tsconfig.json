@@ -7,6 +7,11 @@
     "jsx": "react",
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
-    "moduleResolution": "Node"
+    "moduleResolution": "Node",
+    "plugins": [
+      {
+        "name": "typescript-plugin-css-modules"
+      }
+    ]
   }
 }
