@@ -7,14 +7,13 @@ import {
 } from "@mui/material";
 import React from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
+import { login } from "../../services/auth.service";
 import style from "./login.module.css";
 
 type Inputs = {
   username: string;
   password: string;
 };
-
-const API_URL = "http://emphasoft-test-assignment.herokuapp.com";
 
 const Login = () => {
   const {
@@ -25,18 +24,9 @@ const Login = () => {
   } = useForm<Inputs>();
 
   const onSubmit: SubmitHandler<Inputs> = data => {
-    console.log(data);
-
-    const options = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: `{"username":"${data.username}","password":"${data.password}"}`,
-    };
-
-    fetch(`${API_URL}/api-token-auth/`, options)
+    login(data.username, data.password)
       .then(response => response.json())
       .then(response => {
-        console.log(response);
         if (response.token) {
           localStorage.setItem("token", JSON.stringify(response.token));
         }

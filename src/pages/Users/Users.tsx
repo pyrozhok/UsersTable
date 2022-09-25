@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Box } from "@mui/material";
+import Box from "@mui/material/Box";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { getUsers } from "../../services/users.service";
 
 const columns: GridColDef[] = [
-  { field: "id", headerName: "ID", type: "number", width: 60 },
+  { field: "id", headerName: "ID", type: "number", width: 100 },
   { field: "username", headerName: "User name", width: 130 },
   { field: "first_name", headerName: "First name", width: 150 },
   { field: "last_name", headerName: "Last name", width: 150 },
@@ -18,7 +19,6 @@ const columns: GridColDef[] = [
   { field: "last_login", headerName: "Last Login", width: 130 },
 ];
 
-const API_URL = "http://emphasoft-test-assignment.herokuapp.com";
 interface User {
   id: number;
   username: string;
@@ -31,20 +31,14 @@ interface User {
 
 const Users = () => {
   const [users, setUsers] = useState<User[]>();
-  const getCurrentToken = () => {
-    const tokenStr = localStorage.getItem("token");
-    if (tokenStr) return JSON.parse(tokenStr);
-
-    return null;
-  };
 
   useEffect(() => {
-    const getUsers = () => {
+    /* const getUsers = () => {
       const options = {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Token ${getCurrentToken()}`,
+          Authorization: authHeader(),
         },
       };
 
@@ -55,7 +49,13 @@ const Users = () => {
         })
         .catch(err => console.error(err));
     };
-    getUsers();
+    getUsers(); */
+    getUsers()
+      .then(response => response.json())
+      .then(response => {
+        if (response) setUsers(response as Array<User>);
+      })
+      .catch(err => console.error(err));
   }, []);
 
   return (
