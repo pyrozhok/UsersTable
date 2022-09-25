@@ -33,23 +33,6 @@ const Users = () => {
   const [users, setUsers] = useState<User[]>();
 
   useEffect(() => {
-    /* const getUsers = () => {
-      const options = {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: authHeader(),
-        },
-      };
-
-      return fetch(`${API_URL}/api/v1/users/`, options)
-        .then(response => response.json())
-        .then(response => {
-          if (response) setUsers(response as Array<User>);
-        })
-        .catch(err => console.error(err));
-    };
-    getUsers(); */
     getUsers()
       .then(response => response.json())
       .then(response => {
