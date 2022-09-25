@@ -35,7 +35,12 @@ const Login = () => {
 
     fetch(`${API_URL}/api-token-auth/`, options)
       .then(response => response.json())
-      .then(response => console.log(response))
+      .then(response => {
+        console.log(response);
+        if (response.token) {
+          localStorage.setItem("token", JSON.stringify(response.token));
+        }
+      })
       .catch(err => console.error(err));
   };
 
