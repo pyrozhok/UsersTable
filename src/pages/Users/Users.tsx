@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import TextField from "@mui/material/TextField";
+import Autocomplete from "@mui/material/Autocomplete";
+import {
+  DataGrid,
+  GridColDef,
+  GridValueFormatterParams,
+  GridValueGetterParams,
+} from "@mui/x-data-grid";
 import { getUsers } from "../../services/users.service";
 
 const columns: GridColDef[] = [
@@ -16,7 +23,19 @@ const columns: GridColDef[] = [
     type: "boolean",
     width: 130,
   },
-  { field: "last_login", headerName: "Last Login", width: 130 },
+  {
+    field: "last_login",
+    headerName: "Last Login",
+    type: "string",
+    valueFormatter: (params: GridValueFormatterParams) => {
+      return new Date(params.value).toLocaleDateString("en-US");
+    },
+    // valueGetter for filtering
+    valueGetter: (params: GridValueGetterParams) => {
+      return new Date(params.value).toLocaleDateString("en-US");
+    },
+    width: 130,
+  },
 ];
 
 interface User {
@@ -31,30 +50,62 @@ interface User {
 
 const Users = () => {
   const [users, setUsers] = useState<User[]>();
+  const [rows, setRows] = useState<User[]>();
 
   useEffect(() => {
     getUsers()
       .then(response => response.json())
       .then(response => {
-        if (response) setUsers(response as Array<User>);
+        if (response) {
+          setUsers(response as Array<User>);
+          setRows(response as Array<User>);
+        }
       })
       .catch(err => console.error(err));
   }, []);
 
+  const requestSearch = (searchedVal: string) => {
+    console.log("HEY");
+    const filteredRows = users.filter(user => {
+      return user.username.toLowerCase().includes(searchedVal.toLowerCase());
+    });
+    setRows(filteredRows);
+  };
+
+  const handleSearch = (value: string | null) => {
+    if (value !== null) {
+      requestSearch(value);
+      return;
+    }
+    setRows(users);
+  };
+
   return (
     <main className="container">
       <div className="title">Users</div>
-
+      <Autocomplete
+        id="search-box"
+        freeSolo
+        options={users?.map(user => user.username)}
+        onChange={(event: React.SyntheticEvent, newValue) =>
+          handleSearch(newValue)
+        }
+        renderInput={params => (
+          <TextField {...params} label="Find by username" />
+        )}
+      />
       <Box sx={{ height: 400, width: "100%" }}>
-        {users && (
+        {rows ? (
           <DataGrid
-            rows={users}
+            rows={rows}
             columns={columns}
             pageSize={5}
             rowsPerPageOptions={[5]}
             disableSelectionOnClick
             experimentalFeatures={{ newEditingApi: true }}
           />
+        ) : (
+          <div>Loading...</div>
         )}
       </Box>
     </main>
