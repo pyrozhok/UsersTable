@@ -5,7 +5,7 @@ import {
   Checkbox,
   Button,
 } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { login } from "../../services/auth.service";
 import style from "./login.module.css";
@@ -16,6 +16,7 @@ type Inputs = {
 };
 
 const Login = () => {
+  const [loading, setLoading] = useState(false);
   const {
     register,
     handleSubmit,
@@ -24,11 +25,13 @@ const Login = () => {
   } = useForm<Inputs>();
 
   const onSubmit: SubmitHandler<Inputs> = data => {
+    setLoading(true);
     login(data.username, data.password)
       .then(response => response.json())
       .then(response => {
         if (response.token) {
           localStorage.setItem("token", JSON.stringify(response.token));
+          setLoading(false);
         }
       })
       .catch(err => console.error(err));
@@ -75,6 +78,7 @@ const Login = () => {
             onClick={handleSubmit(onSubmit)}
             fullWidth
             variant="contained"
+            disabled={loading}
             sx={{ mt: 3, mb: 2 }}
           >
             Sign In
