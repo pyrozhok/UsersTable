@@ -82,7 +82,7 @@ const Users = () => {
 
   return (
     <main className="container">
-      <div className="title">Users</div>
+      <h1 className="title">Users</h1>
       <Autocomplete
         id="search-box"
         freeSolo
