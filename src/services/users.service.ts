@@ -1,4 +1,4 @@
-import authHeader from "./auth-header";
+import { authHeader } from "./auth-header";
 
 const API_URL = "http://emphasoft-test-assignment.herokuapp.com/api/v1/users/";
 

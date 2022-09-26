@@ -1,12 +1,13 @@
-import {
-  Container,
-  TextField,
-  FormControlLabel,
-  Checkbox,
-  Button,
-} from "@mui/material";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
+import Container from "@mui/material/Container";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import Alert from "@mui/material/Alert";
+import Typography from "@mui/material/Typography";
+import { Navigate, useNavigate } from "react-router-dom";
+import { isLoggedIn } from "../../services/auth-header";
+import { setAuthHeader, setLoggedIn } from "../../services/auth.service";
 import { login } from "../../services/auth.service";
 import style from "./login.module.css";
 
@@ -16,76 +17,115 @@ type Inputs = {
 };
 
 const Login = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState([]);
+  const authorized = isLoggedIn();
+
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm<Inputs>();
 
+  useEffect(() => {
+    document.title = "EmphaSoft Demo App - Log in";
+  }, []);
+
   const onSubmit: SubmitHandler<Inputs> = data => {
     setLoading(true);
+    setError(null);
     login(data.username, data.password)
-      .then(response => response.json())
       .then(response => {
-        if (response.token) {
-          localStorage.setItem("token", JSON.stringify(response.token));
+        if (response.ok) {
+          response.json().then(body => {
+            setAuthHeader(body.token);
+            setLoggedIn();
+            navigate("/users");
+          });
+        } else {
+          if (response.status !== 404) {
+            response.json().then(body => {
+              const errorMessages = Object.keys(body).map(key => body[key]);
+              console.log(errorMessages);
+              setError(errorMessages);
+            });
+          } else setError(["Entire error"]);
           setLoading(false);
+          throw Error(response.statusText);
         }
+        setLoading(false);
       })
-      .catch(err => console.error(err));
+
+      .catch(err => {
+        console.error(err);
+      });
   };
 
   return (
-    <div className={style.container}>
-      <h1 className={style.title}>Log in</h1>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Container component="main">
-          <TextField
-            defaultValue=""
-            {...register("username", {
-              required: true,
-              maxLength: 20,
-            })}
-            margin="normal"
-            required
-            fullWidth
-            id="username"
-            label="Username"
-            name="username"
-            autoComplete="username"
-            autoFocus
-          />
-          <TextField
-            defaultValue=""
-            {...register("password", { required: true, minLength: 6 })}
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Password (min 6 symbols)"
-            type="password"
-            id="password"
-            autoComplete="current-password"
-          />
-
-          <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
-            label="Remember me"
-          />
-          <Button
-            onClick={handleSubmit(onSubmit)}
-            fullWidth
-            variant="contained"
-            disabled={loading}
-            sx={{ mt: 3, mb: 2 }}
-          >
-            Sign In
-          </Button>
-        </Container>
-      </form>
-    </div>
+    <>
+      {authorized ? (
+        <Navigate to="/users" />
+      ) : (
+        <div className={style.container}>
+          <div className={style.title}>
+            <Typography variant="h2" component="h1" gutterBottom>
+              Log in
+            </Typography>
+          </div>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <Container component="main">
+              <TextField
+                defaultValue=""
+                {...register("username", {
+                  required: "Username is required",
+                })}
+                margin="normal"
+                required
+                fullWidth
+                id="username"
+                label="Username"
+                name="username"
+                autoComplete="username"
+                autoFocus
+                error={errors.username?.message.length > 0 ? true : false}
+                helperText={errors.username ? errors.username.message : ""}
+              />
+              <TextField
+                defaultValue=""
+                {...register("password", { required: "Password is required" })}
+                margin="normal"
+                required
+                fullWidth
+                name="password"
+                label="Password"
+                type="password"
+                id="password"
+                autoComplete="current-password"
+                error={errors.password?.message.length > 0 ? true : false}
+                helperText={errors.password ? errors.password.message : ""}
+              />
+              {error &&
+                error.map((message, index) => (
+                  <Alert key={index} severity="error">
+                    {message}
+                  </Alert>
+                ))}
+              <div className={style.submit}>
+                <Button
+                  disabled={loading}
+                  onClick={handleSubmit(onSubmit)}
+                  fullWidth
+                  variant="contained"
+                >
+                  Sign In
+                </Button>
+              </div>
+            </Container>
+          </form>
+        </div>
+      )}
+    </>
   );
 };
 export default Login;
