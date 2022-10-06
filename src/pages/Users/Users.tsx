@@ -123,62 +123,50 @@ const Users = () => {
 
   return (
     <>
-      {!authorized ? (
-        <Navigate to="/" />
-      ) : (
-        <>
-          <Header />
-          <main className="container">
-            <Typography variant="h5" component="h1" gutterBottom my={2}>
-              Users
-            </Typography>
+      <Header />
+      <main className="container">
+        <Typography variant="h5" component="h1" gutterBottom my={2}>
+          Users
+        </Typography>
 
-            <Snackbar
-              open={showMessage}
-              autoHideDuration={6000}
-              onClose={handleClose}
-            >
-              <Alert
-                onClose={handleClose}
-                severity="error"
-                sx={{ width: "100%" }}
-              >
-                Authorization error, you need to log in.
-              </Alert>
-            </Snackbar>
-            <Autocomplete
-              id="search-box"
-              freeSolo
-              options={
-                users.length > 0 ? users.map(user => user.username) : [""]
-              }
-              onChange={(event: React.SyntheticEvent, newValue) =>
-                handleSearch(newValue)
-              }
-              renderInput={params => (
-                <TextField {...params} label="Find by username" />
-              )}
-              className={style.search}
+        <Snackbar
+          open={showMessage}
+          autoHideDuration={6000}
+          onClose={handleClose}
+        >
+          <Alert onClose={handleClose} severity="error" sx={{ width: "100%" }}>
+            Authorization error, you need to log in.
+          </Alert>
+        </Snackbar>
+        <Autocomplete
+          id="search-box"
+          freeSolo
+          options={users.length > 0 ? users.map(user => user.username) : [""]}
+          onChange={(event: React.SyntheticEvent, newValue) =>
+            handleSearch(newValue)
+          }
+          renderInput={params => (
+            <TextField {...params} label="Find by username" />
+          )}
+          className={style.search}
+        />
+        <Box sx={{ height: 500, width: "100%" }}>
+          {rows && !loading ? (
+            <DataGrid
+              rows={rows}
+              columns={columns}
+              pageSize={5}
+              rowsPerPageOptions={[5]}
+              disableSelectionOnClick
+              experimentalFeatures={{ newEditingApi: true }}
             />
-            <Box sx={{ height: 500, width: "100%" }}>
-              {rows && !loading ? (
-                <DataGrid
-                  rows={rows}
-                  columns={columns}
-                  pageSize={5}
-                  rowsPerPageOptions={[5]}
-                  disableSelectionOnClick
-                  experimentalFeatures={{ newEditingApi: true }}
-                />
-              ) : (
-                <Box sx={{ display: "flex" }}>
-                  <CircularProgress />
-                </Box>
-              )}
+          ) : (
+            <Box sx={{ display: "flex" }}>
+              <CircularProgress />
             </Box>
-          </main>
-        </>
-      )}
+          )}
+        </Box>
+      </main>
     </>
   );
 };
