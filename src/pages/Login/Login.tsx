@@ -54,11 +54,10 @@ const Login = () => {
           setLoading(false);
           throw Error(response.statusText);
         }
-        setLoading(false);
       })
-
-      .catch(err => {
-        console.error(err);
+      .catch(err => console.log(err))
+      .finally(() => {
+        setLoading(false);
       });
   };
 
